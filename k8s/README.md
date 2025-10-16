@@ -6,7 +6,8 @@ This repository contains Kubernetes manifests to deploy the `dwachholder/xd-web-
 
 - `namespace.yaml` - Creates a dedicated namespace for the application
 - `deployment.yaml` - Deploys the application with 2 replicas
-- `service.yaml` - Exposes the application within the cluster
+- `service.yaml` - Exposes the application within the cluster (ClusterIP)
+- `loadbalancer.yaml` - Provides external access with load balancing (LoadBalancer)
 
 ## Prerequisites
 
@@ -14,6 +15,23 @@ This repository contains Kubernetes manifests to deploy the `dwachholder/xd-web-
 - `kubectl` configured to connect to your cluster
 
 ## Deployment
+
+### Automated Deployment (Recommended)
+Use the provided deployment script for a complete setup:
+
+```bash
+./deploy.sh
+```
+
+This script will:
+- Deploy all Kubernetes resources
+- Wait for the deployment to be ready
+- Wait for LoadBalancer external IP assignment
+- Show deployment status
+- Set up port-forwarding for local access
+
+### Manual Deployment
+Deploy resources individually:
 
 1. Apply the namespace:
    ```bash
@@ -30,15 +48,42 @@ This repository contains Kubernetes manifests to deploy the `dwachholder/xd-web-
    kubectl apply -f service.yaml
    ```
 
-4. Check the deployment status:
+4. Create the load balancer:
    ```bash
-   kubectl get pods -n xd-web-app
-   kubectl get svc -n xd-web-app
+   kubectl apply -f loadbalancer.yaml
+   ```
+
+5. Check the deployment status:
+   ```bash
+   kubectl get pods -n xd
+   kubectl get svc -n xd
    ```
 
 ## Accessing the Application
 
-The application is exposed via a ClusterIP service. To access it:
+The application is exposed via both ClusterIP and LoadBalancer services:
+
+### External Access (LoadBalancer)
+The LoadBalancer service provides external access with automatic load balancing:
+
+1. Check the external IP:
+   ```bash
+   kubectl get svc xd-web-app-loadbalancer -n xd
+   ```
+
+2. Access the application via the external IP:
+   ```bash
+   # If external IP is assigned (e.g., 203.0.113.1)
+   curl http://203.0.113.1
+   # Or open in browser: http://203.0.113.1
+   ```
+
+**Note**: External IP assignment depends on your cluster environment:
+- **Cloud providers** (AWS, GCP, Azure): External IP assigned automatically
+- **Local clusters** (minikube, kind): May show `<pending>` status
+
+### Internal Access (ClusterIP)
+For internal cluster access or local development:
 
 1. Port forward to access locally:
    ```bash

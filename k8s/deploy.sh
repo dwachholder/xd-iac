@@ -7,7 +7,7 @@ set -e  # Exit on any error
 
 NAMESPACE="xd"
 SERVICE_NAME="xd-web-app-service"
-LOCAL_PORT=8080
+LOCAL_PORT=3000
 SERVICE_PORT=80
 
 echo "🚀 Starting XD Web App deployment..."
@@ -47,6 +47,10 @@ deploy_resources() {
     echo "Creating service..."
     kubectl apply -f service.yaml
     
+    # Apply load balancer
+    echo "Creating load balancer..."
+    kubectl apply -f loadbalancer.yaml
+    
     echo "✅ All resources applied successfully"
 }
 
@@ -55,6 +59,30 @@ wait_for_deployment() {
     echo "⏳ Waiting for deployment to be ready..."
     kubectl wait --for=condition=available --timeout=300s deployment/xd-web-app -n $NAMESPACE
     echo "✅ Deployment is ready"
+}
+
+# Function to wait for LoadBalancer external IP
+wait_for_loadbalancer() {
+    echo "⏳ Waiting for LoadBalancer external IP assignment..."
+    local timeout=300
+    local count=0
+    
+    while [ $count -lt $timeout ]; do
+        local external_ip=$(kubectl get svc xd-web-app-loadbalancer -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+        if [ -n "$external_ip" ] && [ "$external_ip" != "null" ]; then
+            echo "✅ LoadBalancer external IP assigned: $external_ip"
+            echo "🌐 Application is accessible at: http://$external_ip"
+            return 0
+        fi
+        
+        echo "Waiting for external IP... ($count/$timeout seconds)"
+        sleep 5
+        count=$((count + 5))
+    done
+    
+    echo "⚠️  LoadBalancer external IP assignment timed out"
+    echo "This is normal in some environments (e.g., local clusters)"
+    echo "Check the service status with: kubectl get svc -n $NAMESPACE"
 }
 
 # Function to show deployment status
@@ -68,6 +96,15 @@ show_status() {
     echo ""
     echo "Deployment:"
     kubectl get deployment -n $NAMESPACE
+    echo ""
+    echo "LoadBalancer External IP:"
+    local external_ip=$(kubectl get svc xd-web-app-loadbalancer -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+    if [ -n "$external_ip" ] && [ "$external_ip" != "null" ]; then
+        echo "✅ $external_ip"
+    else
+        echo "⏳ Pending (normal for local clusters like Minikube)"
+    fi
+    echo ""
 }
 
 # Function to setup port-forwarding
@@ -118,11 +155,24 @@ main() {
     # Wait for deployment
     wait_for_deployment
     
-    # Show status
-    show_status
-    
-    # Setup port-forwarding
-    setup_port_forward
+    # Check if we're in Minikube (LoadBalancer won't work)
+    if kubectl get nodes -o jsonpath='{.items[0].metadata.name}' | grep -q minikube; then
+        echo "🔍 Detected Minikube cluster - LoadBalancer services are not supported"
+        echo "📊 Showing deployment status..."
+        show_status
+        echo ""
+        echo "🚀 Setting up port-forwarding instead of LoadBalancer..."
+        setup_port_forward
+    else
+        # Wait for LoadBalancer
+        wait_for_loadbalancer
+        
+        # Show status
+        show_status
+        
+        # Setup port-forwarding
+        setup_port_forward
+    fi
 }
 
 # Run main function
