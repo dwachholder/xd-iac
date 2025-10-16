@@ -1,0 +1,34 @@
+# Minimal ArgoCD Application for XD Web App
+# ==========================================
+# This application watches the GitHub repository and automatically
+# updates the xd-web-app pod when changes are detected.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: xd-web-app
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Project assignment (using default project)
+  project: default
+  
+  # Source configuration - watches the GitHub repository
+  source:
+    repoURL: https://github.com/dwachholder/xd-iac
+    targetRevision: HEAD
+    path: k8s  # Path to Kubernetes manifests
+  
+  # Destination configuration
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: xd
+  
+  # Sync policy - automatically sync when changes are detected
+  syncPolicy:
+    automated:
+      prune: true      # Remove resources that are no longer in Git
+      selfHeal: true   # Automatically sync when drift is detected
+    syncOptions:
+    - CreateNamespace=true  # Create namespace if it doesn't exist
