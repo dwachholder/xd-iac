@@ -1,3 +1,35 @@
+# Deployment Definition for XD Web Application
+# ============================================
+# This file defines a Kubernetes Deployment that manages the lifecycle
+# of our XD web application pods, ensuring high availability and scalability.
+#
+# WHY DEPLOYMENTS ARE NECESSARY IN KUBERNETES:
+# ============================================
+# 1. POD MANAGEMENT: Deployments manage the creation, updating, and deletion
+#    of pods automatically, providing a declarative way to manage application
+#    instances.
+#
+# 2. HIGH AVAILABILITY: Ensure the desired number of replicas are always running,
+#    automatically replacing failed pods to maintain service availability.
+#
+# 3. ROLLING UPDATES: Enable zero-downtime deployments by gradually replacing
+#    old pods with new ones, ensuring continuous service during updates.
+#
+# 4. ROLLBACK CAPABILITY: Allow quick rollback to previous versions if issues
+#    are detected after deployment, minimizing downtime and risk.
+#
+# 5. SCALING: Easily scale applications up or down based on demand by adjusting
+#    the replica count, enabling horizontal scaling.
+#
+# 6. SELF-HEALING: Automatically detect and replace unhealthy pods, ensuring
+#    the application maintains the desired state without manual intervention.
+#
+# 7. RESOURCE MANAGEMENT: Define resource requests and limits for containers,
+#    ensuring proper resource allocation and preventing resource starvation.
+#
+# 8. HEALTH MONITORING: Configure liveness and readiness probes to monitor
+#    application health and ensure only healthy pods receive traffic.
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:

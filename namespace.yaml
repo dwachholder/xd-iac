@@ -1,3 +1,34 @@
+# Namespace Definition for XD Application
+# ======================================
+# This file defines a Kubernetes namespace called "xd" which provides
+# logical isolation and organization for our application resources.
+#
+# WHY NAMESPACES ARE NECESSARY IN KUBERNETES:
+# ===========================================
+# 1. RESOURCE ISOLATION: Namespaces provide logical boundaries that separate
+#    resources, preventing naming conflicts between different applications
+#    or environments (dev, staging, prod).
+#
+# 2. ACCESS CONTROL: Enable fine-grained RBAC (Role-Based Access Control)
+#    by allowing different teams to have different permissions for different
+#    namespaces.
+#
+# 3. RESOURCE QUOTAS: Allow cluster administrators to set resource limits
+#    and quotas per namespace, preventing one application from consuming
+#    all cluster resources.
+#
+# 4. ORGANIZATION: Group related resources together, making it easier to
+#    manage, monitor, and troubleshoot applications.
+#
+# 5. MULTI-TENANCY: Support multiple teams or applications on the same
+#    cluster without interference.
+#
+# 6. NETWORK POLICIES: Enable network segmentation and security policies
+#    at the namespace level.
+#
+# 7. CLEANUP: Simplify resource cleanup by deleting the entire namespace
+#    instead of individual resources.
+
 apiVersion: v1
 kind: Namespace
 metadata:

@@ -1,3 +1,36 @@
+# Service Definition for XD Web Application
+# =========================================
+# This file defines a Kubernetes Service that provides stable network access
+# to our XD web application pods, enabling load balancing and service discovery.
+#
+# WHY SERVICES ARE NECESSARY IN KUBERNETES:
+# =========================================
+# 1. SERVICE DISCOVERY: Provide a stable DNS name and IP address for pods,
+#    allowing other services to find and communicate with our application
+#    regardless of pod restarts or IP changes.
+#
+# 2. LOAD BALANCING: Distribute incoming traffic across multiple pod instances,
+#    improving performance and ensuring no single pod is overwhelmed.
+#
+# 3. ABSTRACTION: Hide the complexity of pod management from clients by
+#    providing a single, stable endpoint that remains constant even when
+#    pods are created, destroyed, or moved.
+#
+# 4. NETWORK STABILITY: Maintain consistent network access even when pods
+#    are rescheduled to different nodes, ensuring reliable communication.
+#
+# 5. TRAFFIC ROUTING: Route traffic to healthy pods only, automatically
+#    excluding unhealthy instances from receiving requests.
+#
+# 6. PORT MAPPING: Enable external access to applications running on
+#    non-standard ports by mapping service ports to container ports.
+#
+# 7. INTER-SERVICE COMMUNICATION: Enable microservices to communicate
+#    with each other using service names instead of IP addresses.
+#
+# 8. CLUSTER INTERNAL ACCESS: Provide internal cluster access to applications
+#    without exposing them to the external network (ClusterIP type).
+
 apiVersion: v1
 kind: Service
 metadata:
