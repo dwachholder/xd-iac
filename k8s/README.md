@@ -1,6 +1,6 @@
 # XD Web App Kubernetes Setup
 
-This repository contains Kubernetes manifests to deploy the `dwachholder/xd-web-app` Docker image with 2 replicas.
+This repository contains Kubernetes manifests to deploy the `dwachholder/xd-web-app:main-8cae1a6` Docker image with 2 replicas.
 
 ## Files
 
