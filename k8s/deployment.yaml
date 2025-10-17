@@ -54,8 +54,8 @@ spec:
     spec:
       containers:
       - name: xd-web-app
-        image: dwachholder/xd-web-app:main-140dd3c
-        # image: dwachholder/xd-web-app:main-2bf2103
+        # image: dwachholder/xd-web-app:main-140dd3c
+        image: dwachholder/xd-web-app:main-2bf2103
         ports:
         - containerPort: 3000
         resources:
