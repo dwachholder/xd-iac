@@ -38,7 +38,12 @@ metadata:
   labels:
     app: xd-web-app
 spec:
-  replicas: 2
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1 # Allow up to 1 additional pod to be created during the update
+      maxUnavailable: 1 # Allow up to 1 pod to be unavailable during the update
   selector:
     matchLabels:
       app: xd-web-app
