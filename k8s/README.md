@@ -14,9 +14,26 @@ This repository contains Kubernetes manifests to deploy the `dwachholder/xd-web-
 - Kubernetes cluster running (minikube, kind, or cloud provider)
 - `kubectl` configured to connect to your cluster
 
+### Starting a Local Cluster with Minikube
+
+To start a local Kubernetes cluster using minikube:
+
+```bash
+./start-k8s.sh
+```
+
+This script will:
+
+- Install minikube if not already installed
+- Install kubectl if not already installed
+- Start a minikube cluster with appropriate configuration
+- Set up port forwarding for HTTP (80) and HTTPS (443)
+- Configure kubectl to use the new cluster
+
 ## Deployment
 
 ### Automated Deployment (Recommended)
+
 Use the provided deployment script for a complete setup:
 
 ```bash
@@ -24,6 +41,7 @@ Use the provided deployment script for a complete setup:
 ```
 
 This script will:
+
 - Deploy all Kubernetes resources
 - Wait for the deployment to be ready
 - Wait for LoadBalancer external IP assignment
@@ -31,24 +49,29 @@ This script will:
 - Set up port-forwarding for local access
 
 ### Manual Deployment
+
 Deploy resources individually:
 
 1. Apply the namespace:
+
    ```bash
    kubectl apply -f namespace.yaml
    ```
 
 2. Deploy the application:
+
    ```bash
    kubectl apply -f deployment.yaml
    ```
 
 3. Create the service:
+
    ```bash
    kubectl apply -f service.yaml
    ```
 
 4. Create the load balancer:
+
    ```bash
    kubectl apply -f loadbalancer.yaml
    ```
@@ -64,9 +87,11 @@ Deploy resources individually:
 The application is exposed via both ClusterIP and LoadBalancer services:
 
 ### External Access (LoadBalancer)
+
 The LoadBalancer service provides external access with automatic load balancing:
 
 1. Check the external IP:
+
    ```bash
    kubectl get svc xd-web-app-loadbalancer -n xd
    ```
@@ -79,16 +104,32 @@ The LoadBalancer service provides external access with automatic load balancing:
    ```
 
 **Note**: External IP assignment depends on your cluster environment:
+
 - **Cloud providers** (AWS, GCP, Azure): External IP assigned automatically
 - **Local clusters** (minikube, kind): May show `<pending>` status
 
+### Minikube Service Access
+
+With minikube, you can easily access services using:
+
+```bash
+# Access the service directly
+minikube service xd-web-app-service --profile=xd-cluster -n xd
+
+# Or get the service URL
+minikube service xd-web-app-service --profile=xd-cluster -n xd --url
+```
+
 ### Internal Access (ClusterIP)
+
 For internal cluster access or local development:
 
 1. Port forward to access locally:
+
    ```bash
    kubectl port-forward -n xd svc/xd-web-app-service 8080:80
    ```
+
    Then visit http://localhost:8080
 
 2. Or use kubectl proxy:
@@ -100,6 +141,7 @@ For internal cluster access or local development:
 ## Scaling
 
 To scale the application to more replicas:
+
 ```bash
 kubectl scale deployment xd-web-app -n xd --replicas=5
 ```
@@ -107,6 +149,7 @@ kubectl scale deployment xd-web-app -n xd --replicas=5
 ## Cleanup
 
 To remove all resources:
+
 ```bash
 kubectl delete namespace xd
 ```
